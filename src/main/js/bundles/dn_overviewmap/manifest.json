@@ -1,0 +1,115 @@
+{
+    "name": "dn_overviewmap",
+    "version": "1.0.0-SNAPSHOT",
+    "title": "${bundleName}",
+    "description": "${bundleDescription}",
+    "vendor": "con terra GmbH",
+    "keywords": [
+        "overviewmap"
+    ],
+    "icon": {},
+    "license": {},
+    "productName": "devnet-mapapps-overviewmap",
+    "dependencies": {
+        "esri": "^4.4.0",
+        "apprt-vue": "^4.4.0",
+        "apprt-vuetify": "^4.4.0",
+        "map-widget": "^4.4.0"
+    },
+    "CSS-Themes-Extension": [
+        {
+            "name": "*",
+            "files": [
+                "./css/styles.css"
+            ]
+        }
+    ],
+    "layout-widgets": [
+        {
+            "widgetRole": "overviewMapWidget",
+            "window": {
+                "autofocus": false,
+                "dockTool": "overviewMapToggleTool",
+                "closable": true,
+                "maximizable": false,
+                "minimizeOnClose": true,
+                "resizable": true,
+                "marginBox": {
+                    "w": 200,
+                    "h": 200,
+                    "b": 75,
+                    "r": 80
+                },
+                "minSize": {
+                    "w": 200,
+                    "h": 200
+                }
+            }
+        },
+        {
+            "widgetRole": "overviewMapWidget",
+            "sublayout": [
+                "mobile_landscape",
+                "mobile_portrait"
+            ],
+            "window": {
+                "resizable": false,
+                "marginBox": {
+                    "w": "100%",
+                    "h": "30%",
+                    "b": 0
+                }
+            }
+        }
+    ],
+    "components": [
+        {
+            "name": "Config",
+            "impl": "OverviewMapWidgetFactory",
+            "provides": [
+                "dijit.Widget",
+                "overviewmap.Widget"
+            ],
+            "instanceFactory": true,
+            "properties": {
+                "widgetRole": "overviewMapWidget",
+                "scaleMultiplier": 15,
+                "enableRotation": false,
+                "basemapId": "streets"
+            },
+            "references": [
+                {
+                    "name": "_mapWidgetModel",
+                    "providing": "map-widget.MapWidgetModel"
+                }
+            ]
+        },
+        {
+            "name": "OverviewMapToggleTool",
+            "impl": "ct/tools/Tool",
+            "provides": [
+                "ct.tools.Tool"
+            ],
+            "propertiesConstructor": true,
+            "properties": {
+                "id": "overviewMapToggleTool",
+                "title": "${ui.windowTitle}",
+                "tooltip": "${tool.tooltip}",
+                "iconClass": "icon-globe",
+                "toolRole": "toolset",
+                "togglable": true,
+                "rules": {
+                    "noGroup": true
+                },
+                "activateHandler": "enableBinding",
+                "deactivateHandler": "disableBinding"
+            },
+            "references": [
+                {
+                    "name": "handlerScope",
+                    "providing": "overviewmap.Widget"
+                }
+            ]
+        }
+    ]
+}

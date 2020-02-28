@@ -15,17 +15,12 @@
             "templatelayout",
             "template-seasons",
             "theme-everlasting",
-            "theme-winter",
-            "theme-spring",
-            "theme-summer",
-            "theme-autumn",
             "map-init",
             "map-preload-2D",
             "map-preload-3D",
             "toolset",
             "banner",
             "basemaptoggler",
-            "custominfo",
             "viewmodeswitcher",
             "mapnavigation",
             "popups-default",
@@ -35,7 +30,8 @@
             "share-link",
             "omnisearch",
             "locator-store",
-            "toc"
+            "toc",
+            "dn_overviewmap"
         ],
         "require": [
             "${app}.app"
@@ -45,6 +41,13 @@
         ]
     },
     "bundles": {
+        "dn_overviewmap": {
+            "Config": {
+                "scaleMultiplier": 15,
+                "enableRotation": false,
+                "basemapId": "streets"
+            }
+        },
         "banner": {
             "BannerWidget": {
                 "label": "Developer Network",
@@ -53,64 +56,6 @@
                 "imagePosition": "above",
                 "link": "http://developernetwork.conterra.de"
             }
-        },
-        "custominfo": {
-            "CustomInfoToggleTool": [
-                {
-                    "widgetSettings": {
-                        "content": "${custominfo.imprint.content}",
-                        "window": {
-                            "marginBox": {
-                                "w": 320,
-                                "h": 500
-                            },
-                            "draggable": true,
-                            "closable": true,
-                            "modal": true,
-                            "maximizable": false,
-                            "resizable": true,
-                            "title": "${custominfo.imprint.title}"
-                        }
-                    },
-                    "type": "IMPRINT",
-                    "toolClass": "ctInfo",
-                    "title": "${custominfo.imprint.title}",
-                    "tooltip": "${custominfo.imprint.tooltip}",
-                    "tooltipPositions": [
-                        "after",
-                        "above",
-                        "below",
-                        "before"
-                    ],
-                    "iconClass": "icon-custom-info-imprint",
-                    "togglable": true,
-                    "id": "IMPRINT_Imprint_CustomInfoTool"
-                },
-                {
-                    "widgetSettings": {
-                        "content": "${custominfo.imprint.content}",
-                        "window": {
-                            "marginBox": {
-                                "w": "100%",
-                                "h": "100%"
-                            },
-                            "draggable": false,
-                            "closable": true,
-                            "modal": true,
-                            "maximizable": false,
-                            "resizable": false,
-                            "title": "${custominfo.imprint.title}"
-                        }
-                    },
-                    "type": "IMPRINT",
-                    "toolClass": "ctInfo",
-                    "title": "${custominfo.imprint.title}",
-                    "tooltip": "${custominfo.imprint.tooltip}",
-                    "iconClass": "icon-custom-info-imprint",
-                    "togglable": true,
-                    "id": "IMPRINT_Imprint_CustomInfoTool_mobile"
-                }
-            ]
         },
         "map-init": {
             "Config": {
@@ -541,7 +486,8 @@
                             "zoomOutTool",
                             "compassTool",
                             "restoreInitialViewTool",
-                            "viewmodeSwitcherTool"
+                            "viewmodeSwitcherTool",
+                            "overviewMapToggleTool"
                         ],
                         "registerWidget": {
                             "widgetRole": "mapview_tools"
@@ -557,10 +503,7 @@
                         "tools": [
                             "tocToggleTool",
                             "printingToggleTool",
-                            "sharelinkTool",
-                            "helloTool",
-                            "IMPRINT_Imprint_CustomInfoTool",
-                            "IMPRINT_Imprint_CustomInfoTool_mobile"
+                            "sharelinkTool"
                         ],
                         "registerWidget": {
                             "widgetRole": "drawer_button"
@@ -568,6 +511,13 @@
                         "container": "ignore",
                         "windowType": "drawer_left"
                     }
+                ]
+            }
+        },
+        "toolrules": {
+            "ToolActiveStateManager": {
+                "activateOnStartToolIds": [
+                    "overviewMapToggleTool"
                 ]
             }
         }
