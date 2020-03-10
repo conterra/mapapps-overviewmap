@@ -139,8 +139,8 @@ export default class CameraWidgetFactory {
     _createOverviewMapBinding(view) {
         const properties = this._properties;
         const overviewMapBinding = this[_overviewMapBinding] = Binding.for(this._mapWidgetModel, view)
-            .syncAll("center")
-            .syncToRight("scale", "scale", (scaleValue) => scaleValue * properties.scaleMultiplier);
+            .syncToRight("scale", "scale", (scaleValue) => scaleValue * properties.scaleMultiplier)
+            .syncToRight("center", "center");
 
         if (properties.enableRotation) {
             overviewMapBinding.syncAllToRight("rotation");
