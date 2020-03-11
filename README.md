@@ -9,7 +9,7 @@ https://demos.conterra.de/mapapps/resources/apps/downloads_overviewmap/index.htm
 ## Installation Guide
 **Requirement: map.apps 4.4.0**
 
-[dn_timeslider Documentation](https://github.com/conterra/mapapps-overviewmap/tree/master/src/main/js/bundles/dn_overviewmap)
+[dn_overviewmap Documentation](https://github.com/conterra/mapapps-overviewmap/tree/master/src/main/js/bundles/dn_overviewmap)
 
 ## Development Guide
 ### Define the mapapps remote base
