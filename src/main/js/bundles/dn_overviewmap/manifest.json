@@ -30,6 +30,7 @@
             "window": {
                 "autofocus": false,
                 "dockTool": "overviewMapToggleTool",
+                "title": "${tool.title}",
                 "closable": true,
                 "maximizable": false,
                 "minimizeOnClose": true,
