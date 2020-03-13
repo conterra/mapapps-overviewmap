@@ -165,6 +165,9 @@ export default class CameraWidgetFactory {
     }
 
     _addExtentGraphicToView(extent, view) {
+        if (!extent) {
+            return;
+        }
         const mapWidgetModel = this._mapWidgetModel;
         view.graphics.removeAll();
         let polygon = this._getPolygonFromExtent(extent);
