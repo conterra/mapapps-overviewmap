@@ -20,7 +20,7 @@ To make the functions of this bundle available to the user, the following tool c
 #### Sample configuration
 ```json
 "Config": {
-    "scaleMultiplier": 3,
+    "scaleMultiplier": 15,
     "enableRotation": false,
     "basemapId": "streets"
 }
