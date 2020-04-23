@@ -14,7 +14,8 @@
         "esri": "^4.4.0",
         "apprt-vue": "^4.4.0",
         "apprt-vuetify": "^4.4.0",
-        "map-widget": "^4.4.0"
+        "map-widget": "^4.4.0",
+        "map-config-api": "^4.4.0"
     },
     "CSS-Themes-Extension": [
         {
@@ -75,13 +76,19 @@
             "properties": {
                 "widgetRole": "overviewMapWidget",
                 "scaleMultiplier": 15,
+                "fixedScale": null,
                 "enableRotation": false,
-                "basemapId": "streets"
+                "basemap": "streets",
+                "mapViewUiComponents": []
             },
             "references": [
                 {
                     "name": "_mapWidgetModel",
                     "providing": "map-widget.MapWidgetModel"
+                },
+                {
+                    "name": "_basemapConfigParser",
+                    "providing": "map-config-api.BasemapConfigParser"
                 }
             ]
         },

@@ -39,8 +39,8 @@
         "dn_overviewmap": {
             "Config": {
                 "scaleMultiplier": 15,
-                "enableRotation": false,
-                "basemapId": "streets"
+                "basemap": "topo",
+                "enableRotation": false
             }
         },
         "banner": {

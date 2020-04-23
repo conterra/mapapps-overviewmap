@@ -74,22 +74,26 @@ export default class CameraWidgetFactory {
         return widget;
     }
 
-    _createOverviewMap(div) {
+    async _createOverviewMap(div) {
+        const properties = this._properties;
+        const mapWidgetModel = this._mapWidgetModel;
+        const basemapConfig = properties.basemap || properties.basemapId;
         const overviewMap = new Map({
-            basemap: this._properties.basemapId
+            basemap: await this._parseBasemapConfig(basemapConfig)
         });
+        const mapViewUiComponents = properties.mapViewUiComponents || [];
         const overviewMapView = this[_overviewMapView] = new MapView({
             map: overviewMap,
             container: div,
             popup: {autoOpenEnabled: false},
             ui: {
-                components: ["attribution"]
-            }
+                components: mapViewUiComponents
+            },
+            spatialReference: mapWidgetModel.spatialReference
         });
         this._disableViewEvents(overviewMapView);
         this._listenOnClickEvent(overviewMapView);
 
-        const mapWidgetModel = this._mapWidgetModel;
         this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
         mapWidgetModel.watch("extent", ({value}) => {
             if (value) {
@@ -102,6 +106,10 @@ export default class CameraWidgetFactory {
         overviewMapBinding
             .syncToRightNow()
             .enable();
+    }
+
+    async _parseBasemapConfig(basemapConfig) {
+        return this._basemapConfigParser.parse(basemapConfig || "streets").then(({instance}) => instance);
     }
 
     _listenOnClickEvent(view) {
@@ -138,8 +146,12 @@ export default class CameraWidgetFactory {
 
     _createOverviewMapBinding(view) {
         const properties = this._properties;
+        const scaleMultiplier = properties.scaleMultiplier;
+        const fixedScale = properties.fixedScale;
         const overviewMapBinding = this[_overviewMapBinding] = Binding.for(this._mapWidgetModel, view)
-            .syncToRight("scale", "scale", (scaleValue) => scaleValue * properties.scaleMultiplier)
+            .syncToRight("scale", "scale", (scaleValue) => {
+                return fixedScale || scaleValue * scaleMultiplier
+            })
             .syncToRight("center", "center");
 
         if (properties.enableRotation) {

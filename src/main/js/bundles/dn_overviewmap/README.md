@@ -17,17 +17,36 @@ To make the functions of this bundle available to the user, the following tool c
 
 ### Config
 
-#### Sample configuration
-```json
+#### Sample configurations
+```
 "Config": {
+    // dynamic scale
     "scaleMultiplier": 15,
-    "enableRotation": false,
-    "basemapId": "streets"
+    // well known basemap ID
+    "basemap": "topo",
+    "mapViewUiComponents": ["attribution"],
+    "enableRotation": false
+}
+```
+```
+"Config": {
+    // fixed scale
+    "fixedScale": 5000000,
+    // wms basemap
+    "basemap": {
+        "title": "BKG WebAtlasDE - Grau",
+        "url": "http://sg.geodatenzentrum.de/wmts_webatlasde.light_grau",
+        "type": "WMTS"
+    },
+    "mapViewUiComponents": [],
+    "enableRotation": false
 }
 ```
 
-| Property            | Type    | Possible Values               | Default       | Description                                                                                                                   |
-|---------------------|---------|-------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------|
-| scaleMultiplier     | Number  |                               | ```15```      | The scale multiplier between the map and the overview map.                                                                     |
-| enableRotation      | Boolean | ```true``` &#124; ```false``` | ```false```   | Enable rotation of the overview map.                                                                                          |
-| basemapId           | String  |                               | ```streets``` | Choose one of the well known basemap IDs: https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap |
+| Property            | Type                 | Possible Values               | Default               | Description                                                                                                                                             |
+|---------------------|----------------------|-------------------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| scaleMultiplier     | Number               |                               | ```15```              | The scale multiplier between the map and the overview map.                                                                                              |
+| fixedScale          | Number               |                               | ```null```            | Set fix overview map scale. If set scaleMultiplier will be ignored.                                                                                     |
+| enableRotation      | Boolean              | ```true``` &#124; ```false``` | ```false```           | Enable rotation of the overview map.                                                                                                                    |
+| basemap             | String &#124; Object |                               | ```streets```         | Choose one of the well known basemap IDs (https://developers.arcgis.com/javascript/latest/api-reference/esri-Map.html#basemap) or an own basemap config |
+| mapViewUiComponents | Array                |                               | ```[]```              | Add possible UI components to the overview map (https://developers.arcgis.com/javascript/latest/api-reference/esri-views-ui-DefaultUI.html#components)  |
