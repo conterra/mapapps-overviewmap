@@ -29,7 +29,7 @@ const _overviewMapBinding = Symbol("_overviewMapBinding");
 const _overviewMapView = Symbol("_overviewMapView");
 const _observers = Symbol("_observers");
 
-export default class CameraWidgetFactory {
+export default class OverviewMapWidgetFactory {
 
     activate() {
         this[_observers] = Observers();
