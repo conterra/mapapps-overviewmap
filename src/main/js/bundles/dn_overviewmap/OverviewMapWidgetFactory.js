@@ -23,7 +23,7 @@ import Map from "esri/Map";
 import MapView from "esri/views/MapView";
 import Graphic from "esri/Graphic";
 import Polygon from "esri/geometry/Polygon";
-import geometryEngine from "esri/geometry/geometryEngine";
+import {rotate} from "esri/geometry/geometryEngine";
 
 const _overviewMapBinding = Symbol("_overviewMapBinding");
 const _overviewMapView = Symbol("_overviewMapView");
@@ -184,9 +184,9 @@ export default class CameraWidgetFactory {
         view.graphics.removeAll();
         let polygon = this._getPolygonFromExtent(extent);
         if (mapWidgetModel.viewmode === "2D") {
-            polygon = geometryEngine.rotate(polygon, mapWidgetModel.rotation);
+            polygon = rotate(polygon, mapWidgetModel.rotation);
         } else {
-            polygon = geometryEngine.rotate(polygon, -mapWidgetModel.camera.heading);
+            polygon = rotate(polygon, -mapWidgetModel.camera.heading);
         }
         const polygonSymbol = {type: "simple-fill"};
         const graphic = new Graphic({
