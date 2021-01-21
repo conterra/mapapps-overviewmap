@@ -4,18 +4,22 @@
         {
             "label": "Run Jetty Server",
             "type": "shell",
-            "command": "mvn clean jetty:run -P watch-all",
+            "command": "mvn jetty:run -P'watch-all,include-mapapps-deps'",
             "group": {
-                "kind": "build"
-            }
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         },
         {
             "label": "Install",
             "type": "shell",
             "command": "mvn clean install -P compress",
             "group": {
-                "kind": "build"
-            }
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         }
     ]
 }
