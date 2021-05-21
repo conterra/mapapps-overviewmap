@@ -14,7 +14,7 @@ def updateVersions(targetversion,pushChanges=false){
 
 pipeline {
     agent {
-       label 'maven-java-8'
+        label 'maven-java-8'
     }
     environment {
         GIT_NEXUS_ID = 'bitbucket-nexus-access'
