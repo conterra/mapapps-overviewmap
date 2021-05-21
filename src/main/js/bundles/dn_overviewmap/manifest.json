@@ -109,8 +109,8 @@
                 "rules": {
                     "noGroup": true
                 },
-                "activateHandler": "enableBinding",
-                "deactivateHandler": "disableBinding"
+                "activateHandler": "onToolActivated",
+                "deactivateHandler": "onToolDeactivated"
             },
             "references": [
                 {

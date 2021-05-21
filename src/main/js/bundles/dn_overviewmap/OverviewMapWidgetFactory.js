@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Binding from "apprt-binding/Binding";
-import {ifDefined} from "apprt-binding/Transformers";
 import Observers from "apprt-core/Observers";
 import Vue from "apprt-vue/Vue";
 import VueDijit from "apprt-vue/VueDijit";
@@ -25,43 +23,37 @@ import Graphic from "esri/Graphic";
 import Polygon from "esri/geometry/Polygon";
 import {rotate} from "esri/geometry/geometryEngine";
 
-const _overviewMapBinding = Symbol("_overviewMapBinding");
 const _overviewMapView = Symbol("_overviewMapView");
 const _observers = Symbol("_observers");
+const _mapObservers = Symbol("_mapObservers");
 
 export default class OverviewMapWidgetFactory {
 
     activate() {
         this[_observers] = Observers();
+        this[_mapObservers] = Observers();
     }
 
     deactivate() {
         this[_observers].clean();
+        this[_mapObservers].clean();
     }
 
     createInstance() {
         const vm = new Vue(OverviewMapWidget);
         const widget = VueDijit(vm);
 
-        // register methods to enable/disable binding
-        widget.enableBinding = () => {
-            if (this[_overviewMapBinding]) {
-                this[_overviewMapBinding]
-                    .syncToRightNow()
-                    .enable();
-            }
+        widget.onToolActivated = () => {
+            const overviewMapView = this[_overviewMapView];
+            this._connectView(overviewMapView);
         };
-        widget.disableBinding = () => {
-            this[_overviewMapBinding].disable();
+        widget.onToolDeactivated = () => {
+            this._disconnectView();
         };
 
-        // clean up binding and attached functions
-        const that = this;
         widget.own({
             remove() {
-                that[_overviewMapBinding].unbind();
-                that[_overviewMapBinding] = undefined;
-                widget.enableBinding = widget.disableBinding = undefined;
+                widget.onToolActivated = widget.onToolDeactivated = undefined;
             }
         });
 
@@ -93,19 +85,7 @@ export default class OverviewMapWidgetFactory {
         });
         this._disableViewEvents(overviewMapView);
         this._listenOnClickEvent(overviewMapView);
-
-        this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
-        mapWidgetModel.watch("extent", ({value}) => {
-            if (value) {
-                const extent = value.clone();
-                this._addExtentGraphicToView(extent, overviewMapView);
-            }
-        });
-
-        const overviewMapBinding = this._createOverviewMapBinding(overviewMapView);
-        overviewMapBinding
-            .syncToRightNow()
-            .enable();
+        this._connectView(overviewMapView);
     }
 
     async _parseBasemapConfig(basemapConfig) {
@@ -144,21 +124,53 @@ export default class OverviewMapWidgetFactory {
         }));
     }
 
-    _createOverviewMapBinding(view) {
+    _connectView(overviewMapView) {
+        if (!overviewMapView) {
+            return;
+        }
+        this._disconnectView();
+
+        const observers = this[_mapObservers];
+        const mapWidgetModel = this._mapWidgetModel;
         const properties = this._properties;
         const scaleMultiplier = properties.scaleMultiplier;
         const fixedScale = properties.fixedScale;
-        const overviewMapBinding = this[_overviewMapBinding] = Binding.for(this._mapWidgetModel, view)
-            .syncToRight("scale", "scale", (scaleValue) => {
-                return fixedScale || scaleValue * scaleMultiplier
-            })
-            .syncToRight("center", "center");
+
+        overviewMapView.scale = fixedScale || mapWidgetModel.scale * scaleMultiplier;
+        observers.add(mapWidgetModel.watch("scale", ({value}) => {
+            overviewMapView.scale = fixedScale || value * scaleMultiplier;
+        }));
+
+        overviewMapView.center = mapWidgetModel.center;
+        observers.add(mapWidgetModel.watch("center", ({value}) => {
+            overviewMapView.center = value;
+        }));
 
         if (properties.enableRotation) {
-            overviewMapBinding.syncAllToRight("rotation");
-            overviewMapBinding.syncToRight("camera", "rotation", ifDefined((camera) => -camera.heading));
+            if (mapWidgetModel.camera) {
+                overviewMapView.rotation = -mapWidgetModel.camera.heading;
+            } else {
+                overviewMapView.rotation = mapWidgetModel.camera;
+            }
+            observers.add(mapWidgetModel.watch("rotation", ({value}) => {
+                overviewMapView.rotation = value;
+            }));
+            observers.add(mapWidgetModel.watch("camera", ({value}) => {
+                overviewMapView.camera = -value.heading;
+            }));
         }
-        return overviewMapBinding;
+
+        this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
+        observers.add(mapWidgetModel.watch("extent", ({value}) => {
+            if (value) {
+                const extent = value.clone();
+                this._addExtentGraphicToView(extent, overviewMapView);
+            }
+        }));
+    }
+
+    _disconnectView() {
+        this[_mapObservers]?.clean();
     }
 
     _getPolygonFromExtent(extent) {
