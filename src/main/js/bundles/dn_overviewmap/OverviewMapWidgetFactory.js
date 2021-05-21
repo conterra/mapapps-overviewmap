@@ -23,20 +23,20 @@ import Graphic from "esri/Graphic";
 import Polygon from "esri/geometry/Polygon";
 import {rotate} from "esri/geometry/geometryEngine";
 
-const _overviewMapView = Symbol("_overviewMapView");
-const _observers = Symbol("_observers");
-const _mapObservers = Symbol("_mapObservers");
-
 export default class OverviewMapWidgetFactory {
 
+    #overviewMapView = null;
+    #observers = null;
+    #mapObservers = null;
+
     activate() {
-        this[_observers] = Observers();
-        this[_mapObservers] = Observers();
+        this.#observers = Observers();
+        this.#mapObservers = Observers();
     }
 
     deactivate() {
-        this[_observers].clean();
-        this[_mapObservers].clean();
+        this.#observers.clean();
+        this.#mapObservers.clean();
     }
 
     createInstance() {
@@ -44,7 +44,7 @@ export default class OverviewMapWidgetFactory {
         const widget = VueDijit(vm);
 
         widget.onToolActivated = () => {
-            const overviewMapView = this[_overviewMapView];
+            const overviewMapView = this.#overviewMapView;
             this._connectView(overviewMapView);
         };
         widget.onToolDeactivated = () => {
@@ -74,7 +74,7 @@ export default class OverviewMapWidgetFactory {
             basemap: await this._parseBasemapConfig(basemapConfig)
         });
         const mapViewUiComponents = properties.mapViewUiComponents || [];
-        const overviewMapView = this[_overviewMapView] = new MapView({
+        const overviewMapView = this.#overviewMapView = new MapView({
             map: overviewMap,
             container: div,
             popup: {autoOpenEnabled: false},
@@ -93,33 +93,33 @@ export default class OverviewMapWidgetFactory {
     }
 
     _listenOnClickEvent(view) {
-        const observers = this[_observers];
+        const observers = this.#observers;
         observers.add(view.on("click", (event) => {
             this._mapWidgetModel.center = event.mapPoint;
         }));
     }
 
     _disableViewEvents(view) {
-        const observers = this[_observers];
-        observers.add(view.on("key-down", function (event) {
+        const observers = this.#observers;
+        observers.add(view.on("key-down", (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("mouse-wheel", function (event) {
+        observers.add(view.on("mouse-wheel", (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("double-click", function (event) {
+        observers.add(view.on("double-click", (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("double-click", ["Control"], function (event) {
+        observers.add(view.on("double-click", ["Control"], (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("drag", function (event) {
+        observers.add(view.on("drag", (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("drag", ["Shift"], function (event) {
+        observers.add(view.on("drag", ["Shift"], (event) => {
             event.stopPropagation();
         }));
-        observers.add(view.on("drag", ["Shift", "Control"], function (event) {
+        observers.add(view.on("drag", ["Shift", "Control"], (event) => {
             event.stopPropagation();
         }));
     }
@@ -130,7 +130,7 @@ export default class OverviewMapWidgetFactory {
         }
         this._disconnectView();
 
-        const observers = this[_mapObservers];
+        const observers = this.#mapObservers;
         const mapWidgetModel = this._mapWidgetModel;
         const properties = this._properties;
         const scaleMultiplier = properties.scaleMultiplier;
@@ -170,7 +170,7 @@ export default class OverviewMapWidgetFactory {
     }
 
     _disconnectView() {
-        this[_mapObservers]?.clean();
+        this.#mapObservers?.clean();
     }
 
     _getPolygonFromExtent(extent) {
