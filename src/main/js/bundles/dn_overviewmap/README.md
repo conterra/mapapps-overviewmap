@@ -42,6 +42,20 @@ To make the functions of this bundle available to the user, the following tool c
     "enableRotation": false
 }
 ```
+```
+"Config": {
+    // fixed scale
+    "fixedScale": 5000000,
+    // wms basemap
+    "basemap": {
+        "title": "Straßenkarte",
+        "type": "AGS_TILED",
+        "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"
+    },
+    "mapViewUiComponents": [],
+    "enableRotation": false
+}
+```
 
 | Property            | Type                 | Possible Values               | Default               | Description                                                                                                                                             |
 |---------------------|----------------------|-------------------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
