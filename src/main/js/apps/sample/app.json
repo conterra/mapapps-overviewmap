@@ -39,7 +39,7 @@
         "dn_overviewmap": {
             "Config": {
                 "scaleMultiplier": 15,
-                "basemap": "topo",
+                "basemap": "topo-vector",
                 "enableRotation": false
             }
         },
