@@ -78,7 +78,7 @@
                 "scaleMultiplier": 15,
                 "fixedScale": null,
                 "enableRotation": false,
-                "basemap": "streets",
+                "basemap": "streets-vector",
                 "mapViewUiComponents": []
             },
             "references": [
