@@ -3,6 +3,9 @@ The Overview Map gives better orientation to the user by showing the current ext
 
 ![Screenshot App](https://github.com/conterra/mapapps-overviewmap/blob/master/screenshot.JPG)
 
+# Build Status
+[![devnet-bundle-snapshot](https://github.com/conterra/mapapps-overviewmap/actions/workflows/devnet-bundle-snapshot.yml/badge.svg)](https://github.com/conterra/mapapps-overviewmap/actions/workflows/devnet-bundle-snapshot.yml)
+
 ## Sample App
 https://demos.conterra.de/mapapps/resources/apps/downloads_overviewmap/index.html
 
