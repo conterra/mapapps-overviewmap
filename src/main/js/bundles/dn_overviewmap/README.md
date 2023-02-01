@@ -15,10 +15,10 @@ To make the functions of this bundle available to the user, the following tool c
 
 ## Configuration Reference
 
-### Config
+### Sample configurations
 
-#### Sample configurations
-```
+#### Dynamic scale and basemap using well known basemap id
+```json
 "Config": {
     // dynamic scale
     "scaleMultiplier": 15,
@@ -28,7 +28,9 @@ To make the functions of this bundle available to the user, the following tool c
     "enableRotation": false
 }
 ```
-```
+
+#### Fixed scale and basemap using custom wms basemap
+```json
 "Config": {
     // fixed scale
     "fixedScale": 5000000,
@@ -42,7 +44,9 @@ To make the functions of this bundle available to the user, the following tool c
     "enableRotation": false
 }
 ```
-```
+
+#### Fixed scale and basemap using custom tiled basemap
+```json
 "Config": {
     // fixed scale
     "fixedScale": 5000000,
@@ -51,6 +55,28 @@ To make the functions of this bundle available to the user, the following tool c
         "title": "Straßenkarte",
         "type": "AGS_TILED",
         "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"
+    },
+    "mapViewUiComponents": [],
+    "enableRotation": false
+}
+```
+
+#### Dynamic scale and basemap using wms basemap with wfs layer overlay
+```json
+ "Config": {
+    "scaleMultiplier": 15,
+    "basemap": {
+        "baseLayers": [ {
+            "title": "MS",
+            "type": "WFS",
+            "url": "https://www.stadt-muenster.de/ows/mapserv706/odalkisserv?REQUEST=GetFeature&SERVICE=WFS&VERSION=2.0.0&TYPENAME=ms:gemarkungen&EXCEPTIONS=XML&MAXFEATURES=1000"
+        },
+            {
+                "title": "BKG WebAtlasDE - Grau",
+                "url": "http://sg.geodatenzentrum.de/wmts_webatlasde.light_grau",
+                "type": "WMTS"
+            }
+        ]
     },
     "mapViewUiComponents": [],
     "enableRotation": false
