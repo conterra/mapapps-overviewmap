@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (C) 2020 con terra GmbH (info@conterra.de)
+    Copyright (C) 2023 con terra GmbH (info@conterra.de)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 -->
 <template>
-    <v-container
-        class="fullWidthAndHeight pa-0">
+    <v-container class="fullWidthAndHeight pa-0">
         <div
             ref="overviewmap"
-            class="fullWidthAndHeight"></div>
+            class="fullWidthAndHeight"
+        />
     </v-container>
 </template>
 <script>

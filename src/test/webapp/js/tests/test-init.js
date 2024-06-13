@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 con terra GmbH (info@conterra.de)
+ * Copyright (C) 2023 con terra GmbH (info@conterra.de)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// eslint-disable-next-line no-undef
 testConfig({
     jsregistry: [{
         //root: "url to registry..",
         packages: [
             // register all self hosted packages
             "*"
-        ]
-    }
+        ]}
         //uncomment, if project runs in remote mode
         // ,{
         //     root: "@@mapapps.remote.base@@/resources/jsregistry/root",
@@ -33,7 +33,7 @@ testConfig({
         //     ]
         // }
     ],
-    // ensure apprt polyfill is loaded during test execution
+    // ensure babel polyfill is loaded during test execution
     deps: [
         "apprt-polyfill",
         // Needed for import { assert } from "chai"
