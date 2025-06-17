@@ -137,14 +137,6 @@ export default class OverviewMapWidgetFactory {
         const fixedScale = properties.fixedScale;
 
         overviewMapView.scale = fixedScale || mapWidgetModel.scale * scaleMultiplier;
-        observers.add(mapWidgetModel.watch("scale", ({value}) => {
-            overviewMapView.scale = fixedScale || value * scaleMultiplier;
-        }));
-
-        overviewMapView.center = mapWidgetModel.center;
-        observers.add(mapWidgetModel.watch("center", ({value}) => {
-            overviewMapView.center = value;
-        }));
 
         if (properties.enableRotation) {
             if (mapWidgetModel.camera) {
@@ -161,9 +153,14 @@ export default class OverviewMapWidgetFactory {
         }
 
         this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
+
         observers.add(mapWidgetModel.watch("extent", ({value}) => {
             if (value) {
                 const extent = value.clone();
+                overviewMapView.goTo({
+                    center: mapWidgetModel.view.center,
+                    scale: fixedScale || mapWidgetModel.view.scale * scaleMultiplier
+                });
                 this._addExtentGraphicToView(extent, overviewMapView);
             }
         }));
