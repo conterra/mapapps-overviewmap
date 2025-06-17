@@ -81,10 +81,28 @@ export default class OverviewMapWidgetFactory {
             ui: {
                 components: mapViewUiComponents
             },
-            spatialReference: mapWidgetModel.spatialReference
+            scale: properties["fixedScale"] || mapWidgetModel.view.scale * properties["scaleMultiplier"],
+            center: mapWidgetModel.view.center,
+            spatialReference: mapWidgetModel.spatialReference,
+            constraints: {
+                snapToZoom: false
+            }
+
         });
-        this._disableViewEvents(overviewMapView);
-        this._listenOnClickEvent(overviewMapView);
+
+        const mode = properties.interactionMode;
+        switch (mode){
+            case "click":
+                this.#enableClickModeOnView(overviewMapView);
+                break;
+            case "interactive":
+                this.#enableInteractiveMode(overviewMapView);
+                break;
+            default:
+                this.#enableClickModeOnView(overviewMapView);
+
+        }
+
         this._connectView(overviewMapView);
     }
 
@@ -92,9 +110,29 @@ export default class OverviewMapWidgetFactory {
         return this._basemapConfigParser.parse(basemapConfig || "streets").then(({instance}) => instance);
     }
 
+    #enableInteractiveMode(overviewMapView){
+        this._mapWidgetModel.view.constraints.snapToZoom = false;
+        overviewMapView.watch("extent", () => {
+            const mainView = this._mapWidgetModel.view;
+            const scale = this._properties["fixedScale"] || overviewMapView.scale / this._properties["scaleMultiplier"];
+            if(mainView && overviewMapView.interacting) {
+                mainView.goTo({
+                    scale: scale,
+                    center: overviewMapView.center
+                });
+            }
+        });
+    }
+
+    #enableClickModeOnView(overviewMapView) {
+        this._listenOnClickEvent(overviewMapView);
+        this._disableViewEvents(overviewMapView);
+    }
+
     _listenOnClickEvent(view) {
         const observers = this.#observers;
         observers.add(view.on("click", (event) => {
+            view.center = event.mapPoint;
             this._mapWidgetModel.center = event.mapPoint;
         }));
     }
@@ -155,14 +193,18 @@ export default class OverviewMapWidgetFactory {
         this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
 
         observers.add(mapWidgetModel.watch("extent", ({value}) => {
-            if (value) {
-                const extent = value.clone();
+            if(!value){
+                return;
+            }
+
+            const extent = value.clone();
+            if (mapWidgetModel.view?.interacting) {
                 overviewMapView.goTo({
                     center: mapWidgetModel.view.center,
                     scale: fixedScale || mapWidgetModel.view.scale * scaleMultiplier
                 });
-                this._addExtentGraphicToView(extent, overviewMapView);
             }
+            this._addExtentGraphicToView(extent, overviewMapView);
         }));
     }
 
