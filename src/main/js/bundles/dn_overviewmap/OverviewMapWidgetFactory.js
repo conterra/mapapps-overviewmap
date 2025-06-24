@@ -22,12 +22,14 @@ import MapView from "esri/views/MapView";
 import Graphic from "esri/Graphic";
 import Polygon from "esri/geometry/Polygon";
 import {rotate} from "esri/geometry/geometryEngine";
+import ViewSynchronizer from "dn_overviewmap/ViewSynchronizer";
 
 export default class OverviewMapWidgetFactory {
 
     #overviewMapView = null;
     #observers = null;
     #mapObservers = null;
+    #viewSynchronizer;
 
     activate() {
         this.#observers = Observers();
@@ -69,6 +71,8 @@ export default class OverviewMapWidgetFactory {
     async _createOverviewMap(div) {
         const properties = this._properties;
         const mapWidgetModel = this._mapWidgetModel;
+        const mainView = await this.#getMainView();
+
         const basemapConfig = properties.basemap || properties.basemapId;
         const overviewMap = new Map({
             basemap: await this._parseBasemapConfig(basemapConfig)
@@ -103,6 +107,9 @@ export default class OverviewMapWidgetFactory {
 
         }
 
+        this.#mapObservers.add(mainView.watch("extent", () => {
+            this._addExtentGraphicToView(mainView.extent, overviewMapView);
+        }));
         this._connectView(overviewMapView);
     }
 
@@ -112,16 +119,8 @@ export default class OverviewMapWidgetFactory {
 
     #enableInteractiveMode(overviewMapView){
         this._mapWidgetModel.view.constraints.snapToZoom = false;
-        overviewMapView.watch("extent", () => {
-            const mainView = this._mapWidgetModel.view;
-            const scale = this._properties["fixedScale"] || overviewMapView.scale / this._properties["scaleMultiplier"];
-            if(mainView && overviewMapView.interacting) {
-                mainView.goTo({
-                    scale: scale,
-                    center: overviewMapView.center
-                });
-            }
-        });
+
+        this._connectView(overviewMapView);
     }
 
     #enableClickModeOnView(overviewMapView) {
@@ -166,50 +165,16 @@ export default class OverviewMapWidgetFactory {
         if (!overviewMapView) {
             return;
         }
-        this._disconnectView();
-
-        const observers = this.#mapObservers;
-        const mapWidgetModel = this._mapWidgetModel;
-        const properties = this._properties;
-        const scaleMultiplier = properties.scaleMultiplier;
-        const fixedScale = properties.fixedScale;
-
-        overviewMapView.scale = fixedScale || mapWidgetModel.scale * scaleMultiplier;
-
-        if (properties.enableRotation) {
-            if (mapWidgetModel.camera) {
-                overviewMapView.rotation = -mapWidgetModel.camera.heading;
-            } else {
-                overviewMapView.rotation = mapWidgetModel.camera;
-            }
-            observers.add(mapWidgetModel.watch("rotation", ({value}) => {
-                overviewMapView.rotation = value;
-            }));
-            observers.add(mapWidgetModel.watch("camera", ({value}) => {
-                overviewMapView.camera = -value.heading;
-            }));
-        }
-
-        this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
-
-        observers.add(mapWidgetModel.watch("extent", ({value}) => {
-            if(!value){
-                return;
-            }
-
-            const extent = value.clone();
-            if (mapWidgetModel.view?.interacting) {
-                overviewMapView.goTo({
-                    center: mapWidgetModel.view.center,
-                    scale: fixedScale || mapWidgetModel.view.scale * scaleMultiplier
-                });
-            }
-            this._addExtentGraphicToView(extent, overviewMapView);
-        }));
+        this.#getMainView().then((view) => {
+            const synchronizer = this.#viewSynchronizer = new ViewSynchronizer(view, overviewMapView, this._mapWidgetModel, this._properties);
+            synchronizer.sync();
+        });
     }
 
     _disconnectView() {
+        this.#viewSynchronizer.stop();
         this.#mapObservers?.clean();
+        this.#observers?.clean();
     }
 
     _getPolygonFromExtent(extent) {
@@ -246,6 +211,25 @@ export default class OverviewMapWidgetFactory {
             attributes: {}
         });
         view.graphics.add(graphic);
+    }
+
+    #getMainView() {
+        const mapWidgetModel = this._mapWidgetModel;
+        // eslint-disable-next-line no-unused-vars
+        return new Promise((resolve, reject) => {
+            if (mapWidgetModel.view) {
+                resolve(mapWidgetModel.view);
+            } else {
+                const handle = mapWidgetModel.watch("view", ({value: view}) => {
+                    if (view) {
+                        handle.remove();
+                        resolve(view);
+                    } else {
+                        reject(new Error("View is undefined"));
+                    }
+                });
+            }
+        });
     }
 
 }
