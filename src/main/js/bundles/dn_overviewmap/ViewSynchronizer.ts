@@ -23,14 +23,14 @@ export default class ViewSynchronizer {
     #overviewMapView: any;
     #observers: any = Observers();
     #options: any;
-    #activeMap: any;
+    #activeMapView: any;
 
 
     constructor(mainView: any, overviewView: any, options: any) {
         this.#mainView = mainView;
         this.#overviewMapView = overviewView;
         this.#options = options;
-        this.#activeMap = mainView;
+        this.#activeMapView = mainView;
     }
 
     sync(): void {
@@ -70,7 +70,7 @@ export default class ViewSynchronizer {
             overviewMapView.rotation = mainView.rotation || 0;
         }
         this.#observers.add(mainView.watch("rotation", (rotation: number) => {
-            if(rotation && this.#activeMap === mainView){
+            if(rotation && this.#activeMapView === mainView){
                 overviewMapView.rotation = rotation;
             }
         }));
@@ -80,7 +80,7 @@ export default class ViewSynchronizer {
         return reactiveUtils.watch(
             () => [viewToWatch.extent],
             async () => {
-                if(viewToWatch === this.#activeMap){
+                if(viewToWatch === this.#activeMapView){
                     viewToUpdate.center = viewToWatch.center;
                     viewToUpdate.scale = this.#options.fixedScale || viewToWatch.scale * scaleMultiplier;
                 }
@@ -92,8 +92,8 @@ export default class ViewSynchronizer {
     }
 
     #watchForActiveMapChanges(): void {
-        this.#observers.add(this.#mainView.on("pointer-enter", () => this.#activeMap = this.#mainView));
-        this.#observers.add(this.#overviewMapView.on("pointer-enter", () => this.#activeMap = this.#overviewMapView));
+        this.#observers.add(this.#mainView.on("pointer-enter", () => this.#activeMapView = this.#mainView));
+        this.#observers.add(this.#overviewMapView.on("pointer-enter", () => this.#activeMapView = this.#overviewMapView));
     }
 
 }
