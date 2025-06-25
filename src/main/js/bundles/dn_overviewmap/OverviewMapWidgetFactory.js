@@ -63,6 +63,7 @@ export default class OverviewMapWidgetFactory {
         // listen to vue widget startup
         vm.$on("startup", () => {
             const overviewMapDiv = vm.$refs.overviewmap;
+            overviewMapDiv.style.cursor = "default";
             this._createOverviewMap(overviewMapDiv);
         });
 
