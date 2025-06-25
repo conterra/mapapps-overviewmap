@@ -34,6 +34,7 @@ export default class OverviewMapWidgetFactory {
     activate() {
         this.#observers = Observers();
         this.#mapObservers = Observers();
+        this.#watchForViewChanges(this._mapWidgetModel);
     }
 
     deactivate() {
@@ -233,4 +234,11 @@ export default class OverviewMapWidgetFactory {
         });
     }
 
+    #watchForViewChanges(mapWidgetModel) {
+        mapWidgetModel.watch("view", ({value}) => {
+            if(value){
+                this._connectView(this.#overviewMapView);
+            }
+        });
+    }
 }
