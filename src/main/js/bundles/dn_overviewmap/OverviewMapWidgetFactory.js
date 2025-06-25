@@ -63,7 +63,6 @@ export default class OverviewMapWidgetFactory {
         // listen to vue widget startup
         vm.$on("startup", () => {
             const overviewMapDiv = vm.$refs.overviewmap;
-            overviewMapDiv.style.cursor = "default";
             this._createOverviewMap(overviewMapDiv);
         });
 
@@ -101,6 +100,7 @@ export default class OverviewMapWidgetFactory {
                 this.#enableClickModeOnView(overviewMapView);
                 break;
             case "interactive":
+                div.style.cursor = "default";
                 this.#enableInteractiveMode(overviewMapView);
                 break;
             default:
