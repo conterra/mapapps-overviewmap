@@ -74,6 +74,12 @@ export default class ViewSynchronizer {
                 overviewMapView.rotation = rotation;
             }
         }));
+
+        this.#observers.add(overviewMapView.watch("rotation", (rotation: number) => {
+            if(rotation && this.#activeMapView === overviewMapView){
+                mainView.rotation = rotation;
+            }
+        }));
     }
 
     #getExtentWatcherForView(viewToWatch: any, viewToUpdate: any, scaleMultiplier: number): WatchHandle{
