@@ -162,6 +162,7 @@ export default class OverviewMapWidgetFactory {
             return;
         }
         this.#getMainView().then((view) => {
+            this.#viewSynchronizer?.stop();
             const synchronizer = this.#viewSynchronizer = new ViewSynchronizer(view, overviewMapView, this._mapWidgetModel, this._properties);
             synchronizer.sync();
 
