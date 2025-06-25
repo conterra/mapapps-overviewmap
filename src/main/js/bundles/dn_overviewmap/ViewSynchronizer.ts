@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import MapView from "esri/views/MapView";
 import {WatchHandle} from "apprt-core/Mutable";
 import Observers from "apprt-core/Observers";
 import * as reactiveUtils from "esri/core/reactiveUtils";
-import MapWidgetModel from "map-widget/MapWidgetModel";
 
 export default class ViewSynchronizer {
 
-    #mainView: MapView;
-    #overviewMapView: MapView;
+    #mainView: any;
+    #overviewMapView: any;
     #observers: any = Observers();
     #options: any;
-    #mapWidgetModel: MapWidgetModel;
-    #activeMap: MapView;
+    #activeMap: any;
 
 
-    constructor(mainView: MapView, overviewView: MapView, mapWidgetModel: MapWidgetModel, options: any) {
+    constructor(mainView: any, overviewView: any, options: any) {
         this.#mainView = mainView;
         this.#overviewMapView = overviewView;
-        this.#mapWidgetModel = mapWidgetModel;
         this.#options = options;
         this.#activeMap = mainView;
     }
@@ -66,21 +62,21 @@ export default class ViewSynchronizer {
 
     #watchForRotation(): void {
         const overviewMapView = this.#overviewMapView;
-        const mapWidgetModel = this.#mapWidgetModel;
+        const mainView = this.#mainView;
 
-        if (mapWidgetModel.camera) {
-            overviewMapView.rotation = -mapWidgetModel.camera.heading;
+        if (mainView.camera) {
+            overviewMapView.rotation = -mainView.camera.heading;
         } else {
-            overviewMapView.rotation = mapWidgetModel.rotation || 0;
+            overviewMapView.rotation = mainView.rotation || 0;
         }
-        this.#observers.add(mapWidgetModel.watch("rotation", ({value}) => {
-            if(value){
-                overviewMapView.rotation = value;
+        this.#observers.add(mainView.watch("rotation", (rotation: number) => {
+            if(rotation && this.#activeMap === mainView){
+                overviewMapView.rotation = rotation;
             }
         }));
     }
 
-    #getExtentWatcherForView(viewToWatch: MapView, viewToUpdate: MapView, scaleMultiplier: number): WatchHandle{
+    #getExtentWatcherForView(viewToWatch: any, viewToUpdate: any, scaleMultiplier: number): WatchHandle{
         return reactiveUtils.watch(
             () => [viewToWatch.extent],
             async () => {
