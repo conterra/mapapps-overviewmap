@@ -56,6 +56,8 @@ export default class ViewSynchronizer {
 
         const scaleMultiplier = this.#options.scaleMultiplier ? this.#options.scaleMultiplier : 1;
 
+        overviewMapView.center = mainView.center;
+        overviewMapView.scale = mainView.scale * scaleMultiplier;
         mainView.constraints.snapToZoom = false;
 
         this.#observers.add(this.#getExtentWatcherForView(overviewMapView, mainView, 1 / scaleMultiplier));
