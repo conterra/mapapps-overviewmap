@@ -145,7 +145,7 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.11</version>
+                    <version>5.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>de.conterra.maven</groupId>
@@ -345,6 +345,7 @@
                     </excludes>
                     <mapping>
                         <vue>XML_STYLE</vue>
+                        <ts>SLASHSTAR_STYLE</ts>
                     </mapping>
                 </configuration>
                 <executions>
