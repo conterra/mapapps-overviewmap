@@ -71,7 +71,6 @@ export default class OverviewMapWidgetFactory {
     async _createOverviewMap(div) {
         const properties = this._properties;
         const mapWidgetModel = this._mapWidgetModel;
-        const mainView = await this.#getMainView();
 
         const basemapConfig = properties.basemap || properties.basemapId;
         const overviewMap = new Map({
@@ -107,9 +106,6 @@ export default class OverviewMapWidgetFactory {
 
         }
 
-        this.#mapObservers.add(mainView.watch("extent", () => {
-            this._addExtentGraphicToView(mainView.extent, overviewMapView);
-        }));
         this._connectView(overviewMapView);
     }
 
@@ -168,6 +164,10 @@ export default class OverviewMapWidgetFactory {
         this.#getMainView().then((view) => {
             const synchronizer = this.#viewSynchronizer = new ViewSynchronizer(view, overviewMapView, this._mapWidgetModel, this._properties);
             synchronizer.sync();
+
+            this.#mapObservers.add(view.watch("extent", () => {
+                this._addExtentGraphicToView(view.extent, overviewMapView);
+            }));
         });
     }
 
