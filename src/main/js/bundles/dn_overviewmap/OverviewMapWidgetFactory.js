@@ -116,8 +116,8 @@ export default class OverviewMapWidgetFactory {
     }
 
     #enableInteractiveMode(overviewMapView){
+        overviewMapView.constraints.rotationEnabled = this._properties.enableRotation;
         this._mapWidgetModel.view.constraints.snapToZoom = false;
-
         this._connectView(overviewMapView);
     }
 
