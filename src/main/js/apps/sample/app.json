@@ -46,7 +46,8 @@
             "Config": {
                 "scaleMultiplier": 15,
                 "basemap": "topo-vector",
-                "enableRotation": false
+                "enableRotation": false,
+                "interactionMode": "click"
             }
         },
         "agssearch": {

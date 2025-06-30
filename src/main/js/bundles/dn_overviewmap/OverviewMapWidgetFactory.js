@@ -96,16 +96,12 @@ export default class OverviewMapWidgetFactory {
 
         const mode = properties.interactionMode;
         switch (mode){
-            case "click":
-                this.#enableClickModeOnView(overviewMapView);
-                break;
             case "interactive":
                 div.style.cursor = "default";
                 this.#enableInteractiveMode(overviewMapView);
                 break;
             default:
                 this.#enableClickModeOnView(overviewMapView);
-
         }
 
         this._connectView(overviewMapView);

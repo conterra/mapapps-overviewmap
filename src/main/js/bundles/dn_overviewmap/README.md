@@ -25,7 +25,8 @@ To make the functions of this bundle available to the user, the following tool c
     // well known basemap ID
     "basemap": "topo",
     "mapViewUiComponents": ["attribution"],
-    "enableRotation": false
+    "enableRotation": false,
+    "interactionMode": "click"
 }
 ```
 
