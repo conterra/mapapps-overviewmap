@@ -75,6 +75,7 @@
             "instanceFactory": true,
             "properties": {
                 "widgetRole": "overviewMapWidget",
+                "interactionMode": "interactive",
                 "scaleMultiplier": 15,
                 "fixedScale": null,
                 "enableRotation": false,

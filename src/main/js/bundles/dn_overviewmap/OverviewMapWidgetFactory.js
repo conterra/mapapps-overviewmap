@@ -22,16 +22,19 @@ import MapView from "esri/views/MapView";
 import Graphic from "esri/Graphic";
 import Polygon from "esri/geometry/Polygon";
 import {rotate} from "esri/geometry/geometryEngine";
+import ViewSynchronizer from "dn_overviewmap/ViewSynchronizer";
 
 export default class OverviewMapWidgetFactory {
 
     #overviewMapView = null;
     #observers = null;
     #mapObservers = null;
+    #viewSynchronizer;
 
     activate() {
         this.#observers = Observers();
         this.#mapObservers = Observers();
+        this.#watchForViewChanges(this._mapWidgetModel);
     }
 
     deactivate() {
@@ -69,6 +72,7 @@ export default class OverviewMapWidgetFactory {
     async _createOverviewMap(div) {
         const properties = this._properties;
         const mapWidgetModel = this._mapWidgetModel;
+
         const basemapConfig = properties.basemap || properties.basemapId;
         const overviewMap = new Map({
             basemap: await this._parseBasemapConfig(basemapConfig)
@@ -81,10 +85,25 @@ export default class OverviewMapWidgetFactory {
             ui: {
                 components: mapViewUiComponents
             },
-            spatialReference: mapWidgetModel.spatialReference
+            scale: properties["fixedScale"] || mapWidgetModel.view.scale * properties["scaleMultiplier"],
+            center: mapWidgetModel.view.center,
+            spatialReference: mapWidgetModel.spatialReference,
+            constraints: {
+                snapToZoom: false
+            }
+
         });
-        this._disableViewEvents(overviewMapView);
-        this._listenOnClickEvent(overviewMapView);
+
+        const mode = properties.interactionMode;
+        switch (mode){
+            case "interactive":
+                div.style.cursor = "default";
+                this.#enableInteractiveMode(overviewMapView);
+                break;
+            default:
+                this.#enableClickModeOnView(overviewMapView);
+        }
+
         this._connectView(overviewMapView);
     }
 
@@ -92,9 +111,21 @@ export default class OverviewMapWidgetFactory {
         return this._basemapConfigParser.parse(basemapConfig || "streets").then(({instance}) => instance);
     }
 
+    #enableInteractiveMode(overviewMapView){
+        overviewMapView.constraints.rotationEnabled = this._properties.enableRotation;
+        this._mapWidgetModel.view.constraints.snapToZoom = false;
+        this._connectView(overviewMapView);
+    }
+
+    #enableClickModeOnView(overviewMapView) {
+        this._listenOnClickEvent(overviewMapView);
+        this._disableViewEvents(overviewMapView);
+    }
+
     _listenOnClickEvent(view) {
         const observers = this.#observers;
         observers.add(view.on("click", (event) => {
+            view.center = event.mapPoint;
             this._mapWidgetModel.center = event.mapPoint;
         }));
     }
@@ -128,49 +159,21 @@ export default class OverviewMapWidgetFactory {
         if (!overviewMapView) {
             return;
         }
-        this._disconnectView();
+        this.#getMainView().then((view) => {
+            this.#viewSynchronizer?.stop();
+            const synchronizer = this.#viewSynchronizer = new ViewSynchronizer(view, overviewMapView, this._properties);
+            synchronizer.sync();
 
-        const observers = this.#mapObservers;
-        const mapWidgetModel = this._mapWidgetModel;
-        const properties = this._properties;
-        const scaleMultiplier = properties.scaleMultiplier;
-        const fixedScale = properties.fixedScale;
-
-        overviewMapView.scale = fixedScale || mapWidgetModel.scale * scaleMultiplier;
-        observers.add(mapWidgetModel.watch("scale", ({value}) => {
-            overviewMapView.scale = fixedScale || value * scaleMultiplier;
-        }));
-
-        overviewMapView.center = mapWidgetModel.center;
-        observers.add(mapWidgetModel.watch("center", ({value}) => {
-            overviewMapView.center = value;
-        }));
-
-        if (properties.enableRotation) {
-            if (mapWidgetModel.camera) {
-                overviewMapView.rotation = -mapWidgetModel.camera.heading;
-            } else {
-                overviewMapView.rotation = mapWidgetModel.camera;
-            }
-            observers.add(mapWidgetModel.watch("rotation", ({value}) => {
-                overviewMapView.rotation = value;
+            this.#mapObservers.add(view.watch("extent", () => {
+                this._addExtentGraphicToView(view.extent, overviewMapView);
             }));
-            observers.add(mapWidgetModel.watch("camera", ({value}) => {
-                overviewMapView.camera = -value.heading;
-            }));
-        }
-
-        this._addExtentGraphicToView(mapWidgetModel.extent, overviewMapView);
-        observers.add(mapWidgetModel.watch("extent", ({value}) => {
-            if (value) {
-                const extent = value.clone();
-                this._addExtentGraphicToView(extent, overviewMapView);
-            }
-        }));
+        });
     }
 
     _disconnectView() {
+        this.#viewSynchronizer.stop();
         this.#mapObservers?.clean();
+        this.#observers?.clean();
     }
 
     _getPolygonFromExtent(extent) {
@@ -209,4 +212,30 @@ export default class OverviewMapWidgetFactory {
         view.graphics.add(graphic);
     }
 
+    #getMainView() {
+        const mapWidgetModel = this._mapWidgetModel;
+        // eslint-disable-next-line no-unused-vars
+        return new Promise((resolve, reject) => {
+            if (mapWidgetModel.view) {
+                resolve(mapWidgetModel.view);
+            } else {
+                const handle = mapWidgetModel.watch("view", ({value: view}) => {
+                    if (view) {
+                        handle.remove();
+                        resolve(view);
+                    } else {
+                        reject(new Error("View is undefined"));
+                    }
+                });
+            }
+        });
+    }
+
+    #watchForViewChanges(mapWidgetModel) {
+        mapWidgetModel.watch("view", ({value}) => {
+            if(value){
+                this._connectView(this.#overviewMapView);
+            }
+        });
+    }
 }
