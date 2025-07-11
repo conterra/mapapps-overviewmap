@@ -426,6 +426,14 @@
             "Config": {
                 "showBasemaps": true,
                 "showLayerLegend": true
+
+            }
+        },
+        "toolrules": {
+            "ToolActiveStateManager": {
+                "activateOnStartToolIds": [
+                    "overviewMapToggleTool"
+                ]
             }
         },
         "toolset": {
@@ -434,6 +442,7 @@
                     {
                         "id": "mapview_tools",
                         "tools": [
+                            "overviewMapToggleTool",
                             "locateMeTool",
                             "zoomInTool",
                             "zoomOutTool",
@@ -529,13 +538,6 @@
                     "windowType": "container",
                     "cssClass": "showToolLabels"
                 }
-            }
-        },
-        "toolrules": {
-            "ToolActiveStateManager": {
-                "activateOnStartToolIds": [
-                    "overviewMapToggleTool"
-                ]
             }
         }
     }

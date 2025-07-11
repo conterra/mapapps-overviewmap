@@ -15,7 +15,7 @@
  */
 module.exports = {
     root: {
-        apptitle: "Overviewmap Sample",
+        apptitle: "Overview Map Sample",
         map: {
             koeln1: {
                 title: "Basic Data",

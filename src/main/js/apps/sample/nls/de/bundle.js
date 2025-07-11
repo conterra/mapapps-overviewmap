@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 module.exports = {
-    apptitle: "Overviewmap Sample",
+    apptitle: "Overview Map Sample",
     map: {
         koeln1: {
             title: "Basisdaten",
