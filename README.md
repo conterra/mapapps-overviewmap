@@ -7,7 +7,7 @@ The Overview Map gives better orientation to the user by showing the current ext
 [![devnet-bundle-snapshot](https://github.com/conterra/mapapps-overviewmap/actions/workflows/devnet-bundle-snapshot.yml/badge.svg)](https://github.com/conterra/mapapps-overviewmap/actions/workflows/devnet-bundle-snapshot.yml)
 
 ## Sample App
-https://demos.conterra.de/mapapps/resources/apps/downloads_overviewmap/index.html
+https://demos.conterra.de/mapapps/resources/apps/public_demo_overviewmap/index.html
 
 ## Installation Guide
 **Requirement: map.apps 4.4.0**
