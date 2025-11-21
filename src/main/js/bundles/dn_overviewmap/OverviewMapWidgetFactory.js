@@ -17,11 +17,11 @@ import Observers from "apprt-core/Observers";
 import Vue from "apprt-vue/Vue";
 import VueDijit from "apprt-vue/VueDijit";
 import OverviewMapWidget from "./OverviewMapWidget.vue";
-import Map from "esri/Map";
-import MapView from "esri/views/MapView";
-import Graphic from "esri/Graphic";
-import Polygon from "esri/geometry/Polygon";
-import {rotate} from "esri/geometry/geometryEngine";
+import Map from "@arcgis/core/Map";
+import MapView from "@arcgis/core/views/MapView";
+import Graphic from "@arcgis/core/Graphic";
+import Polygon from "@arcgis/core/geometry/Polygon";
+import {rotate} from "@arcgis/core/geometry/geometryEngine";
 import ViewSynchronizer from "dn_overviewmap/ViewSynchronizer";
 
 export default class OverviewMapWidgetFactory {
