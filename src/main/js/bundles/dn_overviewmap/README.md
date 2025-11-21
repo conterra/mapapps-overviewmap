@@ -2,7 +2,7 @@
 The Overview Map gives better orientation to the user by showing the current extent of the map in a smaller scaled map within a separated window.
 
 ## Usage
-**Requirement: map.apps 4.4.0**
+**Requirement: map.apps 4.20.0**
 
 1. First you need to add the bundle dn_overviewmap to your app.
 2. Then you can configure it.
