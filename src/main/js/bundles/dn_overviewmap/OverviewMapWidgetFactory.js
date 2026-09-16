@@ -164,6 +164,7 @@ export default class OverviewMapWidgetFactory {
             const synchronizer = this.#viewSynchronizer = new ViewSynchronizer(view, overviewMapView, this._properties);
             synchronizer.sync();
 
+            this._addExtentGraphicToView(view.extent, overviewMapView);
             this.#mapObservers.add(view.watch("extent", () => {
                 this._addExtentGraphicToView(view.extent, overviewMapView);
             }));
